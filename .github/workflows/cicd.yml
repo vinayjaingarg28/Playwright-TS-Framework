@@ -21,7 +21,7 @@
         - name: Install dependencies and browsers
           run: |
             npm ci
-            npc playwright install --with-deps
+            npx playwright install --with-deps
 
         - name: execute tests
           run: |
