@@ -25,14 +25,6 @@
 
         - name: execute tests
           run: npx playwright test
-
-        # - name:  Generate and upload reports
-        #   if: always()
-        #   uses: actions/upload-artifact@v4
-        #   with:
-        #     name: playwright-report
-        #     path: playwright-report
-        #     retention-days: 3
         
         - name:  Generate and upload reports
           if: always()
