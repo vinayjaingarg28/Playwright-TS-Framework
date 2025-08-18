@@ -35,7 +35,7 @@
     deploy:
       needs: test
       if: always()
-      runs-on: unbuntu-latest
+      runs-on: ubuntu-latest
       permissions:
         pages: write
         id-token: write
