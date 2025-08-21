@@ -1,49 +1,62 @@
-  # CICD pipeline
-  name: Automation CICD pipeline
+name: Automation CICD pipeline
 
-  on:
-    pull_request:
-      branches: main
-    workflow_dispatch:
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
 
-  jobs:
-    test:
-      runs-on: ubuntu-latest
+jobs:
+  test:
+    runs-on: ubuntu-latest
 
-      steps: 
-        - name: Checkout repo
-          uses: actions/checkout@v4
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
 
-        - name: Install node
-          uses: actions/setup-node@v4
-          with:
-            node-version: 20
+      - name: Install node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
 
-        - name: Install dependencies and browsers
-          run: |
-            npm ci
-            npx playwright install --with-deps
+      - name: Install dependencies and browsers
+        run: |
+          npm ci
+          npx playwright install --with-deps
 
-        - name: execute tests
-          run: npx playwright test
-        
-        - name:  Generate and upload reports
-          if: always()
-          uses: actions/upload-pages-artifact@v3
-          with:
-            path: playwright-report
+      - name: Execute tests
+        run: npx playwright test
+          
+          
 
-    deploy:
-      needs: test
-      if: always()
-      runs-on: ubuntu-latest
-      permissions:
-        pages: write
-        id-token: write
-      environment:
-        name: github-pages
-        url: ${{ steps.deployment.outputs.page_url }}
-      steps:
-        - name: Deploy to github pages
-          id: deployment
-          uses: actions/deploy-pages@v4
+      # - name: Execute tests
+      #   run: |
+      #     if [ "${{ github.event_name }}" = "pull_request" ]; then
+      #       echo "Running Smoke Tests..."
+      #       npx playwright test --grep @smoke
+      #     elif [ "${{ github.event_name }}" = "push" ] || [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+      #       echo "Running Regression Tests..."
+      #       npx playwright test --grep @regression
+      #     fi
+
+      - name: Generate and upload reports
+        if: always()
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: playwright-report
+
+  deploy:
+    needs: test
+    if: always()
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
